@@ -1,0 +1,8 @@
+.DS_Store
+thumbs.db
+
+.credentials
+/wp-content
+/db-data
+.env.wp
+.env.db

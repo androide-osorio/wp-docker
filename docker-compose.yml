@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  wordpress:
+    build: ./
+    image: wowmarketing:latest
+    depends_on:
+      - mysql
+    ports:
+      - 8080:80
+    volumes:
+      - ./wp:/var/www/html/wp-content
+    env_file: ./.env.wordpress
+
+  mysql:
+    image: mariadb
+    volumes:
+      - ./db_data:/docker-entrypoint-initdb.d
+    env_file: ./.env.mysql
