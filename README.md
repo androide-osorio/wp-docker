@@ -1,11 +1,10 @@
 Wordpress <3 Docker
 =====================
 
-Install any Wordpress site in seconds using Docker.
+Install any Wordpress site in seconds using Docker. It allowsd support for configuring a default custom theme at boot time, as well as volumes for loading pre-existing data.
 
 Software Requirements
 ----------------------
-This project uses the Docker Platform for managing and starting the required services which the site was built upon.
 
 Please go to [Docker's site](https://www.docker.com/products/docker) to download Docker and follow the installation instructions to install Docker in your machine. No other requirements are necessary for running this project.
 
@@ -21,63 +20,74 @@ Now make sure you have a running version of docker Compose:
 $ docker-compose --version
 ```
 
-If you're on a macOS or Windows machine, Docker Compose comes bundled with the Docker Application. On Linux, more [installation steps](https://docs.docker.com/compose/install/) may be required.
+If you're on a macOS or Windows machine, Docker Compose comes bundled with the Docker Application. On Linux, additional [installation steps](https://docs.docker.com/compose/install/) may be required.
 
 Setting up the project
 ----------------------
 ### Environment Variables
 Before you start the project's containers, you need to configure the environment variables the containers will use for an specific environment.
 
-You'll find 2 files named `.env.wordpress.example` and `.env.mysql.example` with boilerplate variables. Rename these files to `.env.wordpress` and `.env.mysql` respectively and configure all the environment variables.
+You'll find 2 files named `.env.wp.example` and `.env.db.example` with boilerplate variables. Rename these files to `.env.wp` and `.env.db` respectively and configure all the environment variables you need.
 
-Below is a list of all the environment variables that need configuration:
+Below is a list of all the environment variables that require configuration:
 
 #### For the WordPress Service
 | Name                   | Description                                                              |
 |------------------------|--------------------------------------------------------------------------|
-| WORDPRESS_VERSION      | the version of WordPress to work with (default to 4.7)                   |
-| WORDPRESS_LOCALE       | the language bundled with WordPress (defaults to `en_US`)                |
-| WORDPRESS_DB_USER      | the database's user for database access (must match `MYSQL_USER`)        |
-| WORDPRESS_DB_NAME      | the database's name  (must match `MYSQL_DATABASE`)                       |
-| WORDPRESS_DB_PASSWORD  | the DB user's password (must match `MYSQL_PASSWORD`)                     |
-| WORDPRESS_TABLE_PREFIX | the database's table prefix (defaults to `wp_`)                          |
-| WP_SITE_URL            | the website's URL used to generate links and rewrite rules               |
-| WP_SITE_TITLE          | the website's title                                                      |
-| WP_ADMIN_USER          | the name of the initial administrative user                              |
-| WP_ADMIN_EMAIL         | the admin user's email address                                           |
-| WP_ADMIN_PASSWORD      | the admin user's account password                                        |
+| `WORDPRESS_VERSION`      | the version of WordPress to work with (default to 4.7)                   |
+| `WORDPRESS_LOCALE`       | the language bundled with WordPress (defaults to `en_US`)                |
+| `WORDPRESS_DB_USER`      | the database user for database access. **It must match `MYSQL_USER`**        |
+| `WORDPRESS_DB_NAME`      | the database name. **It must match `MYSQL_DATABASE`**                       |
+| `WORDPRESS_DB_PASSWORD`  | the DB user's password. **It must match `MYSQL_PASSWORD`**                     |
+| `WORDPRESS_TABLE_PREFIX` | the database table prefix (defaults to `wp_`)                          |
+| `WP_SITE_URL`            | the website's URL used to generate links and rewrite rules               |
+| `WP_SITE_TITLE`          | the website's title                                                      |
+| `WP_ADMIN_USER`          | the name of the initial admin user                              |
+| `WP_ADMIN_EMAIL`         | the admin user's email address                                           |
+| `WP_ADMIN_PASSWORD`      | the admin user's account password                                        |
 
 #### For the Database Service
 | Name                | Description                                                              |
 |---------------------|--------------------------------------------------------------------------|
-| MYSQL_ROOT_PASSWORD | the password for the service's `root` user (make this a strong password) |
-| MYSQL_DATABASE      | the name of the database to create                                       |
-| MYSQL_USER          | the user with access privileges to MYSQL_DATABASE                        |
-| MYSQL_PASSWORD      | the password for MYSQL_USER                                              |
+| `MYSQL_ROOT_PASSWORD` | the password for the service's `root` user (make this a strong password) |
+| `MYSQL_DATABASE`      | the name of the database to create                                       |
+| `MYSQL_USER`          | the user with access privileges to `MYSQL_DATABASE`                        |
+| `MYSQL_PASSWORD`      | the password for MYSQL_USER                                              |
 
-Environment files for development environment are already provided with some default values (`.env.wordpress.dev` and `.env.mysql.dev`). If you're on a development environment, please rename these files as described above. Otherwise, make sure to **delete** these files when deploying to a production environment.
+### Cloning Custom Theme
+This project allows you to clone a pre-existing theme using git and setting it up as your site's default theme, so you don't have to configure it every time you start your site's container.
 
+To take advantage of this, define the following environment variables for the wordpress container:
+
+| Name                   | Description                                                              |
+|------------------------|--------------------------------------------------------------------------|
+| `WORDPRESS_CUSTOM_THEME_NAME`      | The theme's name. This will be used as the folder name of theme                  |
+| `WORDPRESS_CUSTOM_THEME_URL`       | The Theme's repository URL                |
+
+You can include your deployment SSH keys for cloning the theme in the `/.ssh` folder at the root of the project.
+
+Currently, this feature only supports themes versioned with `git`. If you want to use a theme from Wordpress or a third-party theme, you can install and configure it manually.
 
 ### Setting up the containers
-When you're ready with the software requirements, clone this repository into any path in you machine. `cd` into that location and run:
+Clone this repository into any path in your machine. `cd` into that location and run:
 
 ```bash
 $ cd /path/to/project
 $ docker-compose up
 ```
-This will start all the services defined in the `docker-compose.yml` file at the root of the project. The process may take a few minutes.
+This will start all the services defined in the `docker-compose.yml` file at the root of the project. This process may take several minutes when running it for the first time.
 
-When finished, you can access the Marketing site at `http://localhost:8080` in your machine. Two folders will be automatically created when the boot finishes:
+When finished, you can access your freshly-baked Wordpress site at `http://localhost:8080` in your machine. Two folders will be automatically created when the boot finishes:
 
 ```bash
 $ tree -d -L 2
 .
 ├── db_data
-└── wp
+└── wp-content
 ```
 
 * `db_data` is a Docker Volume containing a database backup with all the site's configuration.
-* `wp` is a Docker volume mapped to the `wp-content` folder of the WordPress container, it's here you can customize the WordPress installation.
+* `wp-content` is a Docker volume mapped to the `wp-content` folder of the WordPress container, where you can customize your WordPress installation.
 
 **Important Note:** the `docker-compose up` command should be executed when setting up the project *for the first time*. For starting and shutting down the containers of an existing project, follow the instructions below.
 
@@ -122,8 +132,14 @@ $ docker-compose build
 
 The process may take several minutes to complete. When finished, you can re-create the containers using `docker-compose up`
 
+Persisting Site configuration
+--------------------------------------
+This project is currently ignoring the `db_data` and `wp-content` folders that are used as the container's volumes. If you want to reproduce your wordpress site on multiple machines, you can add them to source control by removing them from the `.gitignore` file and adding them to the repository.
+
+If you think the above solution is unrefined, you can just zip these folders and use git LFS or any other cloud persistence method such as AWS S3 and then download the files however you see fit.
+
 Authors
 --------
-Andrés Osorio <andresf.osorio23@gmail.com>.
+Andrés Osorio <androideosorio@me.com>.
 
-Copyright &copy;2017 WOW Reports
+Please feel free to contribute By creating a pull request. I love Wordpress and Docker, and always wanted to use them together in a scalable way. Any improvement is welcome.
