@@ -22,7 +22,7 @@ echo "| Checking Wordpress Configuration"
 echo "| =========================================="
 if [ ! -f /var/www/html/wp-config.php ]; then
   echo "|=> Wordpress is not consigured. Configuring WordPress..."
-  wp core config --allow-root --path="/var/www/html" --skip-check \
+  wp config create --allow-root --path="/var/www/html" --skip-check \
   --dbhost="$WORDPRESS_DB_HOST" \
   --dbuser="$WORDPRESS_DB_USER" \
   --dbname="$WORDPRESS_DB_NAME" \
