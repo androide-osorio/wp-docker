@@ -1,7 +1,7 @@
-WOW Marketing Website
+Wordpress <3 Docker
 =====================
 
-This repository is the main entry point for configuring the environment of WOW Report's Marketing website built on top of the latest version of Wordpress CMS.
+Install any Wordpress site in seconds using Docker.
 
 Software Requirements
 ----------------------
