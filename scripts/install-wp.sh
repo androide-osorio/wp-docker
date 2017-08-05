@@ -3,7 +3,7 @@
 echo "| =========================================="
 echo "| Checking Wordpress Installation"
 echo "| =========================================="
-if [ ! -d /var/www/html/wp-includes ]; then
+if [ ! -d "/var/www/html/wp-includes" ]; then
   echo "|=> Wordpress is not installed. Installing Wordpress..."
   wp core download --allow-root --path="/var/www/html" \
     --locale="$WORDPRESS_LOCALE" --force
@@ -20,7 +20,7 @@ echo ""
 echo "| =========================================="
 echo "| Checking Wordpress Configuration"
 echo "| =========================================="
-if [ ! -f /var/www/html/wp-config.php ]; then
+if [ ! -f "/var/www/html/wp-config.php" ]; then
   echo "|=> Wordpress is not consigured. Configuring WordPress..."
   wp config create --allow-root --path="/var/www/html" --skip-check \
   --dbhost="$WORDPRESS_DB_HOST" \

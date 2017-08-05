@@ -16,3 +16,8 @@ services:
     volumes:
       - ./db_data:/docker-entrypoint-initdb.d
     env_file: ./.env.db
+
+  adminer:
+    image: adminer
+    ports:
+        - 9000:8080
